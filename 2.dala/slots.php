@@ -1,10 +1,6 @@
 <?php
 
-//slot machine, kaut kada naudas summa, eksiste slotu mashinas bilde.
-// katrs simbols ir uzvaras daudzums. nospied roll vai kko.
-// basically slot machine. simboli izmetas random. kkadi simboli var but biezak/retak
-//minuss nauda par griezienu. ir kkads koeficients a*0.5 b*1 c*1.5 utt.
-//kkads laukums 3x5. uzvaras linijas = briva izvele.
+
 $money = [];
 $spinPrice = 1;
 $insertedMoney = (int) readline("Insert your money. Keep in mind that one spin is {$spinPrice}eur. ");
