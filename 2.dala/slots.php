@@ -1,5 +1,6 @@
 <?php
 
+//kopumā pamats strādā, tikai, ja izkrīt kombinācija, tad nenotiek summas saskaitīšana. Nenāca prātā citu ideju, kā man ir.
 
 $money = [];
 $spinPrice = 1;
