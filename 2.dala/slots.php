@@ -1,41 +1,38 @@
 <?php
 
-//kopumā pamats strādā, tikai, ja izkrīt kombinācija, tad nenotiek summas saskaitīšana. Nenāca prātā citu ideju, kā man ir.
-
-$money = [];
 $spinPrice = 1;
-$insertedMoney = (int) readline("Insert your money. Keep in mind that one spin is {$spinPrice}eur. ");
-$money = $insertedMoney;
+$money = (int) readline("Insert your money. Keep in mind that one spin is {$spinPrice}eur. ");
+
 echo PHP_EOL . PHP_EOL;
 echo "1.Roll";
 echo PHP_EOL;
 echo "2.Quit";
 echo PHP_EOL;
-$input = readline("Wanna roll? :) Press 1 || Want to end? :( Press 2 ");
 
+$input = (int) readline("Wanna roll? :) Press 1 || Want to end? :( Press 2 ");
 
-$symbols = ['F', 'L', 'O', 'B', '@', '*', 'S', '8', '$']; // worst->best
-function randomSymbol($symbols) {
+$symbols = ['F' => 1, 'L' => 2, 'O' => 3, 'B'=> 5, '@'=> 10, '*'=> 20, 'S' => 30, '8' => 50, '$' => 75]; // worst->best with its value
+function randomSymbol(array $symbols): string {
     $randomValue = floor(mt_rand(0, 1000) / 10);
     if($randomValue <= 3) {
         return $symbols[8];
-    } else if ($randomValue <= 5) {
+    }if ($randomValue <= 6) {
         return $symbols[7];
-    } else if ($randomValue <= 7) {
+    }if ($randomValue <= 9) {
         return $symbols[6];
-    } else if ($randomValue <= 10) {
+    }if ($randomValue <= 13) {
         return $symbols[5];
-    } else if ($randomValue <= 21) {
+    }if ($randomValue <= 21) {
         return $symbols[4];
-    } else if ($randomValue <= 40) {
+    }if ($randomValue <= 40) {
         return $symbols[3];
-    } else if ($randomValue <= 50) {
+    }if ($randomValue <= 50) {
         return $symbols[2];
-    } else if ($randomValue <= 70) {
+    }if ($randomValue <= 70) {
         return $symbols[1];
-    } else {
-        return $symbols[0];
     }
+    return $symbols[0];
+
 }
 
 $board = [
@@ -80,95 +77,57 @@ function displayBoard(array $board) {
     echo "---+---+---+---+---\n";
     echo " {$board[2][0]} | {$board[2][1]} | {$board[2][2]} | {$board[2][3]} | {$board[2][4]} \n";
 }
-
-if($input == 1) {
-    while($money > $spinPrice) {
-
-
-        for($i = 0; $i <= 15; $i++) {
-            for($j = 0; $j <= 15; $j++) {
-                $board[$i][$j] = randomSymbol($symbols);
-            }
-        }
-        displayBoard($board);
-        echo PHP_EOL;
-
-        $getPayed = 0;
-        if($board == $combinations) {
-            for($i = 0; $i <= 15; $i++) {
-                for ($j = 0; $j <= 15; $j++) {
-                    foreach($combinations as $combination) {
-                        $combinationCounter = 0;
-
-                        foreach($combination as $position) {
-                            [$i, $j] = $position;
-                            if($board[$i][$j] !== $symbols) {
-                                break;
-                            }
-                            $combinationCounter++;
-                        }
-
-                        if($combinationCounter == 5) {
-                            if($symbols[0]) {
-                                $getPayed = 1;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[1]) {
-                                $getPayed = 2;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[2]) {
-                                $getPayed = 5;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[3]) {
-                                $getPayed = 7;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[4]) {
-                                $getPayed = 10;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[5]) {
-                                $getPayed = 15;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[6]) {
-                                $getPayed = 25;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[7]) {
-                                $getPayed = 50;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            } else if($symbols[8]) {
-                                $getPayed = 100;
-                                $money = $money + $getPayed;
-                                echo "You have won {$getPayed}eur.";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        $money = $money - $spinPrice;
-        echo "Your balance: {$money} eur";
-        echo PHP_EOL;
-
-        echo "1.Roll";
-        echo PHP_EOL;
-        echo "2.Quit";
-        echo PHP_EOL;
-        $input = readline("Roll or quit? ");
-        if($input != 1) {
-            exit;
-        }
-    }
-} else if($input == 2) {
+if($input == 2) {
     exit;
-} else {
+} else if($input > 2 || $input < 1) {
     echo "Invalid input";
     echo PHP_EOL;
+    exit;
+}
+
+while($money >= $spinPrice) {
+
+    for($i = 0; $i <= 15; $i++) {
+        for($j = 0; $j <= 15; $j++) {
+            $board[$i][$j] = randomSymbol(array_keys($symbols));
+        }
+    }
+    displayBoard($board);
+    echo PHP_EOL;
+
+    $getPayed = 0;
+    $money -= $spinPrice;
+
+    foreach($combinations as $combination) {
+        $combinationCounter = 0;
+
+        [$symbolX, $symbolY] = $combination[0];
+        $symbol = $board[$symbolX][$symbolY];
+
+        foreach($combination as $position) {
+            [$x, $y] = $position;
+            if($board[$x][$y] !== $symbol) {
+                break;
+            }
+            $combinationCounter++;
+        }
+        if($combinationCounter >= 3) {
+            $amount = $symbols[$symbol] * $combinationCounter;
+            echo "You won {$amount}eur!";
+            echo PHP_EOL;
+            $money += $symbols[$symbol] * $combinationCounter;
+        }
+    }
+
+    echo "Your balance: {$money} eur";
+    echo PHP_EOL;
+
+    echo "1.Roll";
+    echo PHP_EOL;
+    echo "2.Quit";
+    echo PHP_EOL;
+    $input = readline("Roll or quit? ");
+    if($input != 1) {
+        exit;
+    }
 }
